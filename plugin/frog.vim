@@ -16,18 +16,14 @@ function! AddFile()
 endfunction
 
 function! GoTo(idx)
-    echo "going to " . (a:idx + 1)
+    let userIdx = a:idx+1
+    echo "[ribbit] going to " . userIdx
     if a:idx < len(g:frog_files)
         execute 'edit' g:frog_files[a:idx]
     else
-        echo "[ribbit] no file found at " . a:idx
+        echo "[ribbit] no file found at " . userIdx
     endif
 endfunction
-
-    " let args = argv()
-    " for arg in args
-    "     echo arg
-    " endfor
 
 function! List()
     if len(g:frog_files) == 0
@@ -109,6 +105,8 @@ function! Scratcher()
         nnoremap <buffer> <C-k> :call Move(-1)<CR>
         nnoremap <buffer> <C-j> :call Move(1)<CR>
         nnoremap <buffer> q :bd<CR>
+        nnoremap <buffer> <ESC> :bd<CR>
+        autocmd WinLeave <buffer> if &buftype == 'nofile' | bd! | endif
     augroup END
 endfunction
 
