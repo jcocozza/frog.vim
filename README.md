@@ -1,3 +1,3 @@
-# frog 🐸
+# frog.vim 🐸
 
 Hop between files.
