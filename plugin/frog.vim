@@ -1,12 +1,17 @@
 let g:frog_files = []
+let g:use_args = 1
+
+if g:use_args
+    let g:frog_files = argv()
+endif
 
 function! AddFile()
     let f = expand("%:p")
     if index(g:frog_files, f) == -1
-        echo "adding: " . f
+        echo "[ribbit] adding: " . f
         call add(g:frog_files, f)
     else
-        echo "already in list"
+        echo "[ribbit] already in list"
     endif
 endfunction
 
@@ -15,15 +20,21 @@ function! GoTo(idx)
     if a:idx < len(g:frog_files)
         execute 'edit' g:frog_files[a:idx]
     else
-        echo "no file found at " . a:idx
+        echo "[ribbit] no file found at " . a:idx
     endif
 endfunction
 
+    " let args = argv()
+    " for arg in args
+    "     echo arg
+    " endfor
+
 function! List()
     if len(g:frog_files) == 0
-        echo "no frog files"
+        echo "[ribbit] no frog files"
         return
     endif
+    echo "[ribbit]"
     let i = 1
     for f in g:frog_files
         echo i . ": " . f
@@ -78,7 +89,7 @@ endfunction
 
 function! Scratcher()
     if len(g:frog_files) == 0
-        echo "no frog files"
+        echo "[ribbit] no frog files"
         return
     endif
 
