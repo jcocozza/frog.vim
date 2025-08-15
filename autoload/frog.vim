@@ -1,5 +1,5 @@
 " global state
-let s:frog_files = []
+let s:frog_files = [] " from the user's perspective this behaves like a 1-indexed list
 let s:prefix = "[🐸ribbit]"
 if g:frog_use_args
     let s:frog_files = argv()
@@ -50,7 +50,7 @@ function! frog#List()
     endif
     echo s:prefix
     for i in range(len(s:frog_files))
-        echo i . ": " . s:frog_files[i]
+        echo (i+1) . ": " . s:frog_files[i]
     endfor
 endfunction
 
