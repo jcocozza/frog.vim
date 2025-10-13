@@ -2,7 +2,10 @@
 let s:frog_files = [] " from the user's perspective this behaves like a 1-indexed list
 let s:prefix = "[🐸ribbit]"
 if g:frog_use_args
-    let s:frog_files = argv()
+    for f in argv()
+        let ff = { 'col': 0, 'line': 0, 'rel': f, 'abs': fnamemodify(f, ":p") }
+        call add(s:frog_files, ff)
+    endfor
 endif
 
 " i is always out of bounds when list is len 0
@@ -22,22 +25,29 @@ function! s:Swap(i, j)
 endfunction
 
 function! frog#AddFile()
+    let c = col(".")
+    let l = line(".")
     let abs_f = fnamemodify(expand('%:p'), ':p')
     let rel_f = fnamemodify(abs_f, ':.')
-    let normalized_files = map(copy(s:frog_files), 'fnamemodify(v:val, ":p")')
-    if index(normalized_files, abs_f) == -1
-        echo s:prefix . " adding: " . rel_f
-        call add(s:frog_files, rel_f)
-    else
-        echo s:prefix . " " . rel_f ." is already in list"
-    endif
+
+    let ff = { 'col': c, 'line': l, 'rel': rel_f, 'abs': abs_f }
+
+    for frog_file in s:frog_files
+        if abs_f == frog_file['abs']
+            echo s:prefix . " " . rel_f ." is already in list"
+            return
+        endif
+    endfor
+
+    echo s:prefix . " adding: " . rel_f . " c: " . c . " l: " . l
+    call add(s:frog_files, ff)
 endfunction
 
 function! frog#GoTo(idx)
     let userIdx = a:idx+1
     echo s:prefix . " going to " . userIdx
     if a:idx < len(s:frog_files)
-        execute 'edit' s:frog_files[a:idx]
+        execute 'edit' s:frog_files[a:idx]['rel']
     else
         echo s:prefix . " no file found at " . userIdx
     endif
@@ -50,7 +60,7 @@ function! frog#List()
     endif
     echo s:prefix
     for i in range(len(s:frog_files))
-        echo (i+1) . ": " . s:frog_files[i]
+        echo (i+1) . ": " . s:frog_files[i]['rel'] . ":" . s:frog_files[i]['col'] . ":" . s:frog_files[i]['line']
     endfor
 endfunction
 
@@ -140,7 +150,7 @@ function! s:RedrawPopup() abort
     endif
     let display = []
     for i in range(len(s:frog_files))
-        let line = (i == s:selected_index ? '> ' : '  ') . (i+1) . ' ' .s:frog_files[i]
+        let line = (i == s:selected_index ? '> ' : '  ') . (i+1) . ' ' . s:frog_files[i]['rel'] . ':' . s:frog_files[i]['col'] . ':' . s:frog_files[i]['line']
         call add(display, line)
     endfor
     let s:popup_id = popup_create(display, {
