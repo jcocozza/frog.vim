@@ -48,6 +48,7 @@ function! frog#GoTo(idx)
     echo s:prefix . " going to " . userIdx
     if a:idx < len(s:frog_files)
         execute 'edit' s:frog_files[a:idx]['rel']
+        call cursor(s:frog_files[a:idx]['line'], s:frog_files[a:idx]['col'])
     else
         echo s:prefix . " no file found at " . userIdx
     endif
